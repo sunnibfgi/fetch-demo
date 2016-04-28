@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>fetch API</title>
+<style>
+    * { margin: 0; padding: 0; list-style: none} 
+    body { font-size: 14px}
+</style>
+</head>
+
+<body>
+<div id="result"></div>
+<p>
+    <button type="button" id="prev">prev</button>
+    <button type="button" id="next">next</button>
+</p>
+<script>
+//fetch API test
+(function() {
+  
+  var result = $('result');
+  var endPage = startPage = idx = 0;
+  var num = 30;
+
+  function next(data, size) {
+    var html = '';
+    endPage = Math.min(size, endPage += num);
+    data.slice(startPage, endPage)
+      .forEach(function(el, i) {
+        if (startPage < num) {
+          idx = i + 1;
+        } else {
+          idx = startPage;
+          idx += (i + 1)
+        }
+        html += '<p><b>' + idx + '.</b> ' + el.description + '</p>';
+      });
+
+    if (endPage < size) {
+      startPage = endPage;
+    }
+
+    render(html);
+  }
+
+  function prev(data, size) {
+    var html = '', delta;
+    delta = endPage - startPage > 0 ? 0 : num;
+    startPage = Math.max(num, startPage -= delta);
+    endPage = startPage;
+    data.slice(startPage - num, startPage)
+      .forEach(function(el, i) {
+        if (startPage <= num) {
+          idx = i + 1;
+        } else {
+          idx = startPage - num;
+          idx += (i + 1)
+        }
+
+        html += '<p><b>' + idx + '</b> ' + el.description + '</p>';
+      });
+    render(html);
+  }
+    
+  function $(id) {
+    return document.getElementById(id);
+  }
+    
+  function events(el, fn) {
+    el.onclick = fn;
+  }
+
+  function render(html) {
+    result.innerHTML = html;
+  }
+
+  if (!window.fetch) {
+    return false;
+  }
+    
+  fetch('data.json').then(function(res) {
+    return res.json();
+  }).then(function(data) {
+    var size = data.length;
+    events($('next'), function() {
+      next(data, size);
+    });
+    events($('prev'), function() {
+      prev(data, size);
+    });
+    next(data, size);
+  });
+    
+})();
+
+</script>
+</body>
+</html>
