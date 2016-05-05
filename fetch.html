@@ -95,9 +95,7 @@
       if (step >= Math.ceil(size / num)) {
         return false;
       }
-
       step += 1;
-
       console.log(step);
       next(data, size);
     });
@@ -106,8 +104,6 @@
       step -= 1;
       console.log(step);
       prev(data, size);
-
-
     });
     next(data, size);
   }).catch(function(err) {
