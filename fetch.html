@@ -17,12 +17,13 @@
 </p>
 <script>
 //fetch API test
+    
 (function() {
-
   var result = $('result');
   var endPage = startPage = idx = 0;
   var num = 39;
   var cache = Object.create(null);
+  var step = 1;
 
   function next(data, size) {
     var html = '';
@@ -30,7 +31,6 @@
     if (cache[endPage]) {
       html = cache[endPage];
       console.log('next cached...');
-
     } else {
       data.slice(startPage, endPage).forEach(function(el, i) {
         if (startPage < num) {
@@ -84,26 +84,35 @@
   function render(html) {
     result.innerHTML = html;
   }
-
   if (!window.fetch) {
     return false;
   }
-
   fetch('data.json').then(function(res) {
     return res.json();
   }).then(function(data) {
     var size = data.length;
     events($('next'), function() {
+      if (step >= Math.ceil(size / num)) {
+        return false;
+      }
+
+      step += 1;
+
+      console.log(step);
       next(data, size);
     });
     events($('prev'), function() {
+      if (step <= 1) return false;
+      step -= 1;
+      console.log(step);
       prev(data, size);
+
+
     });
     next(data, size);
   }).catch(function(err) {
     console.log(err);
   });
-
 })();
 
 </script>
